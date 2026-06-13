@@ -12,7 +12,8 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL") # Render URL ရမှ ပြန်ထည
 
 # AI နဲ့ Bot ကို Setup လုပ်ခြင်း
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
+
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
 
