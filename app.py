@@ -37,7 +37,6 @@ def reply_with_gemini(message):
 
 # --- SERVER FOR RENDER (WEBHOOK ROUTER) ---
 
-# Telegram မှ လှမ်းပို့သမျှ Update အားလုံးကို လက်ခံမည့်လမ်းကြောင်း
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
 def getMessage():
     if request.headers.get('content-type') == 'application/json':
@@ -47,6 +46,26 @@ def getMessage():
         return '', 200
     else:
         return 'Invalid Secret', 403
+
+# Browser ကနေ ဝင်ကြည့်ရင် သာမန် Message ပဲ ပြတော့မှာဖြစ်လို့ 429 Error ထပ်မတက်တော့ပါဘူး
+@app.route("/")
+def webhook():
+    return "Bot Server is Alive and Running!", 200
+
+if __name__ == "__main__":
+    # စက်စနိုးနိုးချင်းမှာ Webhook ကို အလိုအလျောက် တစ်ခေါက်တည်း ချိတ်ပေးမည့်စနစ်
+    if WEBHOOK_URL:
+        try:
+            clean_url = WEBHOOK_URL.strip().rstrip('/')
+            bot.remove_webhook()
+            bot.set_webhook(url=f"{clean_url}/{BOT_TOKEN}")
+            print("Webhook set successfully during startup!")
+        except Exception as e:
+            print(f"Failed to set webhook at startup: {e}")
+            
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
 
 # ပင်မ URL ကို နှိပ်လျှင် Webhook လမ်းကြောင်းကို အလိုအလျောက် Reset ချပေးမည့်နေရာ
 @app.route("/")
